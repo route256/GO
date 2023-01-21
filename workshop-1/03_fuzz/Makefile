@@ -1,0 +1,6 @@
+
+test:
+	go test ./...
+
+fuzz:
+	go test -fuzz ./...

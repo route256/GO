@@ -1,0 +1,51 @@
+version: '2'
+services:
+  filed:
+    command: /file.d/file.d --config /config.yaml
+    image: ozonru/file.d:latest-linux-amd64
+    volumes:
+      - ./data/log.txt:/tmp/logs/log.txt
+      - ./data/offsets.yaml:/tmp/offsets.yaml
+      - ./filed.yml:/config.yaml
+    links:
+      - graylog
+    depends_on:
+      - graylog
+  mongodb:
+    image: mongo:3
+    volumes:
+      - ./data/mongo:/data/db
+  elasticsearch:
+    image: elasticsearch:7.17.6
+    # volumes:
+    #   - ./data/elastic:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  graylog:
+    image: graylog/graylog:4.3
+    volumes:
+      - ./graylog.conf:/usr/share/graylog/data/config/graylog.conf
+    environment:
+      # (must be at least 16 characters)
+      - GRAYLOG_PASSWORD_SECRET=EabOdthinPafivup
+      # Password: admin
+      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_HTTP_BIND_ADDRESS=0.0.0.0:7555
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:7555/
+    links:
+      - mongodb:mongo
+      - elasticsearch
+    depends_on:
+      - mongodb
+      - elasticsearch
+    ports:
+      # Graylog web interface and REST API
+      - 7555:7555
+      # Syslog TCP
+      - 8514:8514
+      # Syslog UDP
+      - 8514:8514/udp
+      # GELF TCP
+      - 12201:12201

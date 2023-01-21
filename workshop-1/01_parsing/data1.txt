@@ -1,0 +1,6 @@
+Name:Иван, Amount:12
+Name:Петр, Amount:65
+Name:Сергей, Amount:10
+Name:Афанасий, Amount:-6
+Name:Петр, Amount:80
+Name:Афанасий, Amount:10
