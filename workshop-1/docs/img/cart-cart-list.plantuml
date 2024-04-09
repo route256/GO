@@ -1,0 +1,21 @@
+@startuml
+
+actor User as u
+collections Cart as c
+database CartStorage as cs
+collections ProductService as p
+
+u -> c : /cart/list\n- user
+activate c
+c -> cs : cart.GetItemsByUserID
+loop for each item in cart
+  c -> p : get_product\n- token\n- sku
+  activate p
+  p -> c : Response:\n- name\n- price
+  deactivate p
+
+end
+c -> u : Response:\n- []item\n- total_price
+deactivate c
+
+@enduml

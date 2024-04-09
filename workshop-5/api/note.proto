@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package note;
+
+option go_package = "route256/ws5/pkg/note;note";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service Note {
+  // Создает заметку
+  rpc Create (CreateRequest) returns (CreateResponse) {
+    option (google.api.http) = {
+      post: "/v1/note"
+      body: "*"
+    };
+  };
+
+  // Возвращает список заметок
+  rpc List (ListRequest) returns (ListResponse) {
+    option (google.api.http) = {
+      get: "/v1/note"
+    };
+  };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+
+message CreateRequest {
+  uint64   user_id = 1;
+  NoteInfo info    = 2;
+
+  message NoteInfo {
+    string title   = 1;
+    string content = 2;
+  }
+}
+
+message CreateResponse {
+  uint64 id = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// List endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+
+message ListRequest {
+  uint64   user_id = 1;
+}
+
+message ListResponse {
+  repeated Note notes = 1;
+
+  message Note {
+    uint64                    id         = 1;
+    NoteInfo                  info       = 2;
+    google.protobuf.Timestamp created_at = 4;
+    google.protobuf.Timestamp updated_at = 5;
+
+    message NoteInfo {
+      string title   = 1;
+      string content = 2;
+    }
+  }
+}

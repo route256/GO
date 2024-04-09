@@ -1,0 +1,12 @@
+@startuml
+
+actor User as u
+collections Cart as c
+database CartStorage as cs
+
+u -> c : /cart/item/delete\n- user\n- sku uint32
+activate c
+c -> cs : cart.DeleteItem()
+deactivate c
+
+@enduml

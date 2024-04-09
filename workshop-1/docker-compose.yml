@@ -1,0 +1,19 @@
+version: "3.1"
+services:
+  cart:
+    image: cart
+    build: ./cart/
+    ports:
+      - "8082:8080"
+    depends_on:
+      - loms
+  loms:
+    image: loms
+    build: ./loms/
+    ports:
+      - "8083:8080"
+  # notification:
+  #   image: notification
+  #   build: ./notification
+  #   ports:
+  #     - "8082:8082"

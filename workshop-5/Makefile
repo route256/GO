@@ -1,33 +1,42 @@
+LOCAL_BIN:=$(CURDIR)/bin
 
-dev:
-	go run workshop5/cmd/fibonacci -devel
+LOCAL_MIGRATION_DIR=./migrations
+LOCAL_MIGRATION_DSN="host=localhost port=6432 dbname=note user=note-user password=note-password sslmode=disable"
 
-prod:
-	mkdir -p logs/data
-	go run workshop5/cmd/fibonacci 2>&1 | tee logs/data/log.txt
+install-minimock:
+	go install github.com/gojuno/minimock/v3/cmd/minimock@latest
 
-.PHONY: logs
-logs:
-	mkdir -p logs/data
-	touch logs/data/log.txt
-	touch logs/data/offsets.yaml
-	sudo chmod -R 777 logs/data
-	cd logs && sudo docker compose up
+install-go-deps:
+	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1
+	GOBIN=$(LOCAL_BIN) go install -mod=mod google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+	GOBIN=$(LOCAL_BIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.15.0
 
-.PHONY: tracing
-tracing:
-	cd tracing && sudo docker compose up
+vendor-proto:
+		mkdir -p vendor-proto
+		@if [ ! -d vendor-proto/google ]; then \
+			git clone https://github.com/googleapis/googleapis vendor-proto/googleapis &&\
+			mkdir -p  vendor-proto/google/ &&\
+			mv vendor-proto/googleapis/google/api vendor-proto/google &&\
+			rm -rf vendor-proto/googleapis ;\
+		fi
+		@if [ ! -d vendor-proto/google/protobuf ]; then\
+			git clone https://github.com/protocolbuffers/protobuf vendor-proto/protobuf &&\
+			mkdir -p  vendor-proto/google/protobuf &&\
+			mv vendor-proto/protobuf/src/google/protobuf/*.proto vendor-proto/google/protobuf &&\
+			rm -rf vendor-proto/protobuf ;\
+		fi
 
-.PHONY: metrics
-metrics:
-	mkdir -p metrics/data
-	sudo chmod -R 777 metrics/data
-	cd metrics && sudo docker compose up
+# https://github.com/bufbuild/buf
+install-buf:
+	brew install bufbuild/buf/buf
 
-pull:
-	sudo docker pull prom/prometheus
-	sudo docker pull grafana/grafana-oss
-	sudo docker pull ozonru/file.d:latest-linux-amd64
-	sudo docker pull elasticsearch:7.17.6
-	sudo docker pull graylog/graylog:4.3
-	sudo docker pull jaegertracing/all-in-one:1.18
+generate-service:
+	buf generate api
+
+install-goose:
+	go install github.com/pressly/goose/v3/cmd/goose@latest
+
+local-migration-up:
+	goose -dir ${LOCAL_MIGRATION_DIR} postgres ${LOCAL_MIGRATION_DSN} up -v
+
+
