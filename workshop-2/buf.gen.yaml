@@ -1,0 +1,29 @@
+version: v1
+plugins:
+   # protoc-gen-go - go types
+  - name: go
+    out: pkg
+    opt:
+      - paths=source_relative
+  # protoc-gen-go-grpc - grpc client & service
+  - name: go-grpc
+    out: pkg
+    opt:
+      - paths=source_relative
+  # protoc-gen-grpc-gateway - grpc gateway (https://github.com/grpc-ecosystem/grpc-gateway#4-generate-reverse-proxy-using-protoc-gen-grpc-gateway)
+  - name: grpc-gateway
+    out: pkg
+    opt:
+      - logtostderr=true
+      - paths=source_relative
+      - generate_unbound_methods=true
+  # protoc-gen-openapiv2 - openapiv2 documentation (https://github.com/grpc-ecosystem/grpc-gateway#6-optional-generate-openapi-definitions-using-protoc-gen-openapiv2)
+  - name: openapiv2
+    out: api/openapiv2
+    opt:
+      - logtostderr=true
+  # protoc-gen-validate - validation (https://github.com/bufbuild/protoc-gen-validate/blob/main/docs.md#go)
+  - plugin: buf.build/bufbuild/validate-go
+    out: pkg
+    opt:
+      - paths=source_relative

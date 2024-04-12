@@ -1,0 +1,12 @@
+@startuml
+
+actor User as u
+collections Cart as c
+database CartStorage as cs
+
+u -> c : /cart/clear\n- user
+activate c
+c -> cs : cart.DeleteItemsByUserID
+deactivate c
+
+@enduml

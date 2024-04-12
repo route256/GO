@@ -1,0 +1,7 @@
+apiVersion: 1
+
+datasources:
+  - name: prom
+    type: prometheus
+    url: # сюда нужна ссылка к prometheus
+    isDefault: true

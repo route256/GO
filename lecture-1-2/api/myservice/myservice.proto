@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package gitlab.ozon.dev.go.classroom_8.students.lecture_1_2.api.myservice;
+
+option go_package = "gitlab.ozon.dev/go/classroom-8/students/lecture-1-2/pkg/api/myservice";
+
+service Ods {}
