@@ -1,3 +1,3 @@
 module route256/loms
 
-go 1.21
+go 1.24

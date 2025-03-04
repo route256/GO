@@ -2,7 +2,7 @@ CURDIR=$(shell pwd)
 BINDIR=${CURDIR}/bin
 GOVER=$(shell go version | perl -nle '/(go\d\S+)/; print $$1;')
 SMARTIMPORTS=${BINDIR}/smartimports_${GOVER}
-LINTVER=v1.51.1
+LINTVER=v1.64.5
 LINTBIN=${BINDIR}/lint_${GOVER}_${LINTVER}
 PACKAGE=route256/notifications/cmd/app
 
