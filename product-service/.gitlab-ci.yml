@@ -1,0 +1,17 @@
+stages:
+  - build
+
+variables:
+  BASE_STUDENTS_REPOSITORY: $CI_REGISTRY/go/classroom-20/students/base
+build-image:
+  stage: build
+  script:
+    - echo "$CI_JOB_TOKEN" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - docker build -t $CI_REGISTRY_IMAGE:latest -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA -t $BASE_STUDENTS_REPOSITORY/products:latest -t $BASE_STUDENTS_REPOSITORY/products:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - echo "$BASE_REGISTRY_RW" | docker login $CI_REGISTRY -u "$CI_REGISTRY_USER" --password-stdin
+    - docker push $BASE_STUDENTS_REPOSITORY/products:latest
+    - docker push $BASE_STUDENTS_REPOSITORY/products:$CI_COMMIT_SHA
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'

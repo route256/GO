@@ -1,0 +1,114 @@
+swagger: "2.0"
+
+info:
+  title: products
+  version: 0.0.1
+
+schemes:
+  - http
+
+tags:
+  - name: Products
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /product:
+    get:
+      operationId: getProducts
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/product"
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: "#/definitions/error"
+      parameters:
+        - name: count
+          in: query
+          description: Количество sku к возвращению
+          type: integer
+          format: int32
+          default: 100
+          minimum: 1
+        - name: start_after_sku
+          in: query
+          description: После какого sku начать вывод
+          type: integer
+          format: int64
+          default: 0
+      tags:
+        - Products
+      security:
+        - api_key: []
+
+  /product/{sku}:
+    get:
+      operationId: getProduct
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: "#/definitions/product"
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: "#/definitions/error"
+      parameters:
+        - name: sku
+          in: path
+          description: Информация о продукте
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      tags:
+        - Products
+      security:
+        - api_key: []
+
+definitions:
+  error:
+    description: Represents general error in the API response
+    properties:
+      code: 
+        type: integer 
+        x-isnullable: false 
+      message:
+        description: the message of this error
+        type: string
+        x-isnullable: false
+    required:
+      - code
+      - message 
+    title: General error
+    type: object
+
+  product:
+    type: object
+    properties:
+      sku:
+        type: integer
+        format: int64
+      name:
+        type: string
+      price:
+        type: integer
+        format: int32
+    required:
+      - sku
+      - name
+      - price
+
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: X-API-KEY
+    in: header
